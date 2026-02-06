@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "gnuboy.h"
 #include "defs.h"
 #include "regs.h"
@@ -20,15 +22,17 @@ rcvar_t emu_exports[] =
 	RCV_END
 };
 
-
-
-
-
-
+extern struct lcd lcd;
+extern byte (*patpix)[8][8];
+extern byte *palmap;
+extern byte (*crsmap)[32768];
 
 void emu_init()
 {
-	
+	lcd.vbank = malloc(2 * 8192);
+	crsmap = malloc(32768 * 4);
+	palmap = malloc(32768);
+	patpix = malloc(4096 * 8 * 8);
 }
 
 

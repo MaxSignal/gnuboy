@@ -618,7 +618,7 @@ void debug_disassemble(addr a, int c)
 				case 'O':
 				case 'o':
 					ops[k] = readb(a); a++;
-					j += sprintf(mnemonic + j, "%+d",
+					j += sprintf(mnemonic + j, "%d",
 						(n8)(ops[k++]));
 					break;
 				}
@@ -642,7 +642,7 @@ void debug_disassemble(addr a, int c)
 			printf("%02X %02X %02X ", ops[0], ops[1], ops[2]);
 			break;
 		}
-		printf("%-16.16s", mnemonic);
+		printf("%-16s", mnemonic);
 		printf(
 			" SP=%04X.%04X BC=%04X.%02X.%02X DE=%04X.%02X "
 			"HL=%04X.%02X A=%02X F=%02X %c%c%c%c%c",

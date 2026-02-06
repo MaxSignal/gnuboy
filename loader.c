@@ -225,7 +225,7 @@ int rom_load()
 	if (rlen > len) memset(rom.bank[0]+len, 0xff, rlen - len);
 	
 	ram.sbank = malloc(8192 * mbc.ramsize);
-
+	ram.ibank = malloc(4096 * 8);
 	initmem(ram.sbank, 8192 * mbc.ramsize);
 	initmem(ram.ibank, 4096 * 8);
 
@@ -275,7 +275,7 @@ int sram_save()
 	return 0;
 }
 
-
+#ifndef GNUBOY_DISABLE_SAVESTATES
 void state_save(int n)
 {
 	FILE *f;
@@ -316,6 +316,7 @@ void state_load(int n)
 	}
 	free(name);
 }
+#endif /* GNUBOY_DISABLE_SAVESTATES */
 
 void rtc_save()
 {
@@ -330,7 +331,7 @@ void rtc_load()
 {
 	FILE *f;
 	if (!rtc.batt) return;
-	if (!(f = fopen(rtcfile, "r"))) return;
+	if (!(f = fopen(rtcfile, "rb"))) return;
 	rtc_load_internal(f);
 	fclose(f);
 }
@@ -344,9 +345,11 @@ void loader_unload()
 	if (saveprefix) free(saveprefix);
 	if (rom.bank) free(rom.bank);
 	if (ram.sbank) free(ram.sbank);
+        if (ram.ibank) free(ram.ibank);
 	romfile = sramfile = saveprefix = 0;
 	rom.bank = 0;
 	ram.sbank = 0;
+	ram.ibank = 0;
 	mbc.type = mbc.romsize = mbc.ramsize = mbc.batt = 0;
 }
 
@@ -421,7 +424,9 @@ rcvar_t loader_exports[] =
 {
 	RCV_STRING("savedir", &savedir),
 	RCV_STRING("savename", &savename),
+#ifdef GNUBOY_DISABLE_SAVESTATES
 	RCV_INT("saveslot", &saveslot),
+#endif /* GNUBOY_DISABLE_SAVESTATES */
 	RCV_BOOL("forcebatt", &forcebatt),
 	RCV_BOOL("nobatt", &nobatt),
 	RCV_BOOL("forcedmg", &forcedmg),

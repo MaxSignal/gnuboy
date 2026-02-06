@@ -5,12 +5,12 @@
 #include "fb.h"
 
 
-static byte palmap[32768];
+byte *palmap;
 static byte pallock[256];
 static int palrev[256];
 
 /* Course color mapping, for when palette is exhausted. */
-static byte crsmap[4][32768];
+byte (*crsmap)[32768];
 static int crsrev[4][256];
 static const int crsmask[4] = { 0x7BDE, 0x739C, 0x6318, 0x4210 };
 

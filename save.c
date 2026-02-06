@@ -27,6 +27,7 @@
 #define NOSAVE { -1, "\0\0\0\0", 0 }
 #define END { 0, "\0\0\0\0", 0 }
 
+#ifndef GNUBOY_DISABLE_SAVESTATES
 struct svar
 {
 	int len;
@@ -265,4 +266,4 @@ void savestate(FILE *f)
 	fseek(f, sramblock<<12, SEEK_SET);
 	fwrite(ram.sbank, 4096, srl, f);
 }
-
+#endif /* GNUBOY_DISABLE_SAVESTATES */

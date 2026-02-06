@@ -2,10 +2,10 @@
 #define __GNUBOY_H__
 
 #ifndef DIRSEP
-    #ifdef DINGOO_NATIVE
+    #if defined(ALT_DIRSEP) || defined(DINGOO_NATIVE)
         #define DIRSEP "\\"
         #define DIRSEP_CHAR '\\'
-    #else /* DINGOO_NATIVE */
+    #else /* ALT_DIRSEP || DINGOO_NATIVE */
         /* define Unix style path seperator */
         /* probably could do this better with # string literal macro trick ... for now duplicate */
         #define DIRSEP "/"
@@ -73,9 +73,11 @@ void pal_release(byte n);
 byte pal_getcolor(int c, int r, int g, int b);
 
 /* save.c */
+#ifndef GNUBOY_DISABLE_SAVESTATES
 #include <stdio.h> /* need FILE for below */
 void savestate(FILE *f);
 void loadstate(FILE *f);
+#endif /* GNUBOY_DISABLE_SAVESTATES */
 
 /* inflate.c */
 int unzip (const unsigned char *data, long *p, void (* callback) (unsigned char d));

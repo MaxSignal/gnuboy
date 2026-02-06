@@ -127,7 +127,7 @@ int rc_setvar_n(int i, int c, char **v)
 			((int *)rcvars[i].mem)[j] = my_atoi(v[j]);
 		return 0;
 	case rcv_bool:
-		if (c < 1 || atoi(v[0]) || strchr("yYtT", v[0][0]))
+		if (c < 1 || my_atoi(v[0]) || strchr("yYtT", v[0][0]))
 			*(int *)rcvars[i].mem = 1;
 		else if (strchr("0nNfF", v[0][0]))
 			*(int *)rcvars[i].mem = 0;

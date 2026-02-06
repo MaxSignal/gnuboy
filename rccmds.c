@@ -84,6 +84,7 @@ static int cmd_reset()
 	return 0;
 }
 
+#ifndef GNUBOY_DISABLE_SAVESTATES
 static int cmd_savestate(int argc, char **argv)
 {
 	state_save(argc > 1 ? atoi(argv[1]) : -1);
@@ -95,6 +96,7 @@ static int cmd_loadstate(int argc, char **argv)
 	state_load(argc > 1 ? atoi(argv[1]) : -1);
 	return 0;
 }
+#endif /* GNUBOY_DISABLE_SAVESTATES */
 
 #ifndef GNUBOY_NO_SCREENSHOT
 static int cmd_screenshot(int argc, char **argv)
@@ -144,9 +146,11 @@ rccmd_t rccmds[] =
 	RCC("source", cmd_source),
 	RCC("reset", cmd_reset),
 	RCC("quit", cmd_quit),
+#ifndef GNUBOY_DISABLE_SAVESTATES
 	RCC("savestate", cmd_savestate),
 	RCC("loadstate", cmd_loadstate),
 	
+#endif /* GNUBOY_DISABLE_SAVESTATES */
 	RCC_END
 };
 

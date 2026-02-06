@@ -32,6 +32,7 @@ static char *defaultconfig[] =
 	"bind joy1 +a",
 	"bind joy2 +select",
 	"bind joy3 +start",
+#ifndef GNUBOY_DISABLE_SAVESTATES
 	"bind 1 \"set saveslot 1\"",
 	"bind 2 \"set saveslot 2\"",
 	"bind 3 \"set saveslot 3\"",
@@ -44,6 +45,7 @@ static char *defaultconfig[] =
 	"bind 0 \"set saveslot 0\"",
 	"bind ins savestate",
 	"bind del loadstate",
+#endif /* GNUBOY_DISABLE_SAVESTATES */
 	"source gnuboy.rc",
 	NULL
 };
@@ -290,6 +292,7 @@ int main(int argc, char *argv[])
 	catch_signals();
 	vid_init();
 	pcm_init();
+	emu_init();
 
 	rom = strdup(rom);
 	sys_sanitize(rom);

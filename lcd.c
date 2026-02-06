@@ -40,7 +40,7 @@ struct scan scan;
 #define WT (scan.wt)
 #define WV (scan.wv)
 
-byte patpix[4096][8][8];
+byte (*patpix)[8][8];
 byte patdirty[1024];
 byte anydirty;
 
@@ -109,27 +109,152 @@ void updatepatpix()
 		patdirty[i] = 0;
 		for (j = 0; j < 8; j++)
 		{
-			a = ((i<<4) | (j<<1));
-			for (k = 0; k < 8; k++)
-			{
-				c = vram[a] & (1<<k) ? 1 : 0;
-				c |= vram[a+1] & (1<<k) ? 2 : 0;
-				patpix[i+1024][j][k] = c;
-			}
-			for (k = 0; k < 8; k++)
-				patpix[i][j][k] =
-					patpix[i+1024][j][7-k];
+			asm volatile (
+				"mov.w   @%2,r1         \n"
+				"swap.b  r1,r2          \n"
+
+				"mov     #0,r0          \n"
+				"shlr    r1             \n"
+				"rotcl   r0             \n"
+				"shlr    r2             \n"
+				"rotcl   r0             \n"
+				"mov.b   r0,@%0         \n"
+				"mov.b   r0,@(7,%1)     \n"
+				"mov     #0,r0          \n"
+				"shlr    r1             \n"
+				"rotcl   r0             \n"
+				"shlr    r2             \n"
+				"rotcl   r0             \n"
+				"mov.b   r0,@(1,%0)     \n"
+				"mov.b   r0,@(6,%1)     \n"
+				"mov     #0,r0          \n"
+				"shlr    r1             \n"
+				"rotcl   r0             \n"
+				"shlr    r2             \n"
+				"rotcl   r0             \n"
+				"mov.b   r0,@(2,%0)     \n"
+				"mov.b   r0,@(5,%1)     \n"
+				"mov     #0,r0          \n"
+				"shlr    r1             \n"
+				"rotcl   r0             \n"
+				"shlr    r2             \n"
+				"rotcl   r0             \n"
+				"mov.b   r0,@(3,%0)     \n"
+				"mov.b   r0,@(4,%1)     \n"
+				"mov     #0,r0          \n"
+				"shlr    r1             \n"
+				"rotcl   r0             \n"
+				"shlr    r2             \n"
+				"rotcl   r0             \n"
+				"mov.b   r0,@(4,%0)     \n"
+				"mov.b   r0,@(3,%1)     \n"
+				"mov     #0,r0          \n"
+				"shlr    r1             \n"
+				"rotcl   r0             \n"
+				"shlr    r2             \n"
+				"rotcl   r0             \n"
+				"mov.b   r0,@(5,%0)     \n"
+				"mov.b   r0,@(2,%1)     \n"
+				"mov     #0,r0          \n"
+				"shlr    r1             \n"
+				"rotcl   r0             \n"
+				"shlr    r2             \n"
+				"rotcl   r0             \n"
+				"mov.b   r0,@(6,%0)     \n"
+				"mov.b   r0,@(1,%1)     \n"
+				"mov     #0,r0          \n"
+				"shlr    r1             \n"
+				"rotcl   r0             \n"
+				"shlr    r2             \n"
+				"rotcl   r0             \n"
+				"mov.b   r0,@(7,%0)     \n"
+				"mov.b   r0,@%1         \n"
+				: /* outputs */
+				: /* inputs */
+				/* %0 */ "r"(patpix[i+1024][j]),
+				/* %1 */ "r"(patpix[i][j]),
+				/* %2 */ "r"(&vram[(i<<4)|(j<<1)])
+				: /* clobbers */
+				"r0", "r1", "r2"
+			);
 		}
-		for (j = 0; j < 8; j++)
-		{
-			for (k = 0; k < 8; k++)
-			{
-				patpix[i+2048][j][k] =
-					patpix[i][7-j][k];
-				patpix[i+3072][j][k] =
-					patpix[i+1024][7-j][k];
-			}
-		}
+asm volatile (
+            "mov.l   @%0,r0         \n"
+            "mov.l   @(4,%0),r1     \n"
+            "mov.l   r0,@(56,%1)    \n"
+            "mov.l   r1,@(60,%1)    \n"
+            "mov.l   @(8,%0),r0     \n"
+            "mov.l   @(12,%0),r1    \n"
+            "mov.l   r0,@(48,%1)    \n"
+            "mov.l   r1,@(52,%1)    \n"
+            "mov.l   @(16,%0),r0    \n"
+            "mov.l   @(20,%0),r1    \n"
+            "mov.l   r0,@(40,%1)    \n"
+            "mov.l   r1,@(44,%1)    \n"
+            "mov.l   @(24,%0),r0    \n"
+            "mov.l   @(28,%0),r1    \n"
+            "mov.l   r0,@(32,%1)    \n"
+            "mov.l   r1,@(36,%1)    \n"
+            "mov.l   @(32,%0),r0    \n"
+            "mov.l   @(36,%0),r1    \n"
+            "mov.l   r0,@(24,%1)    \n"
+            "mov.l   r1,@(28,%1)    \n"
+            "mov.l   @(40,%0),r0    \n"
+            "mov.l   @(44,%0),r1    \n"
+            "mov.l   r0,@(16,%1)    \n"
+            "mov.l   r1,@(20,%1)    \n"
+            "mov.l   @(48,%0),r0    \n"
+            "mov.l   @(52,%0),r1    \n"
+            "mov.l   r0,@(8,%1)     \n"
+            "mov.l   r1,@(12,%1)    \n"
+            "mov.l   @(56,%0),r0    \n"
+            "mov.l   @(60,%0),r1    \n"
+            "mov.l   r0,@%1         \n"
+            "mov.l   r1,@(4,%1)     \n"
+
+            "add     %2,%0          \n"
+            "add     %2,%1          \n"
+
+            "mov.l   @%0,r0         \n"
+            "mov.l   @(4,%0),r1     \n"
+            "mov.l   r0,@(56,%1)    \n"
+            "mov.l   r1,@(60,%1)    \n"
+            "mov.l   @(8,%0),r0     \n"
+            "mov.l   @(12,%0),r1    \n"
+            "mov.l   r0,@(48,%1)    \n"
+            "mov.l   r1,@(52,%1)    \n"
+            "mov.l   @(16,%0),r0    \n"
+            "mov.l   @(20,%0),r1    \n"
+            "mov.l   r0,@(40,%1)    \n"
+            "mov.l   r1,@(44,%1)    \n"
+            "mov.l   @(24,%0),r0    \n"
+            "mov.l   @(28,%0),r1    \n"
+            "mov.l   r0,@(32,%1)    \n"
+            "mov.l   r1,@(36,%1)    \n"
+            "mov.l   @(32,%0),r0    \n"
+            "mov.l   @(36,%0),r1    \n"
+            "mov.l   r0,@(24,%1)    \n"
+            "mov.l   r1,@(28,%1)    \n"
+            "mov.l   @(40,%0),r0    \n"
+            "mov.l   @(44,%0),r1    \n"
+            "mov.l   r0,@(16,%1)    \n"
+            "mov.l   r1,@(20,%1)    \n"
+            "mov.l   @(48,%0),r0    \n"
+            "mov.l   @(52,%0),r1    \n"
+            "mov.l   r0,@(8,%1)     \n"
+            "mov.l   r1,@(12,%1)    \n"
+            "mov.l   @(56,%0),r0    \n"
+            "mov.l   @(60,%0),r1    \n"
+            "mov.l   r0,@%1         \n"
+            "mov.l   r1,@(4,%1)     \n"
+            : /* outputs */
+            : /* inputs */
+            /* %0 */ "r"(patpix[i][0]),
+            /* %1 */ "r"(patpix[i+2048][0]),
+            /* %2 */ "r"(1024*64)
+            : /* clobbers */
+            "r0", "r1"
+        );
 	}
 	anydirty = 0;
 }
@@ -845,7 +970,9 @@ void pal_dirty()
 
 void lcd_reset()
 {
-	memset(&lcd, 0, sizeof lcd);
+	memset(lcd.vbank, 0, 8192 * 2);
+	memset(&(lcd.oam), 0, sizeof(lcd.oam));
+	memset(lcd.pal, 0, sizeof(lcd.pal));
 	lcd_begin();
 	vram_dirty();
 	pal_dirty();

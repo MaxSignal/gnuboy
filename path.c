@@ -30,8 +30,10 @@ char *path_search(char *name, char *mode, char *path)
 		if (n) l = n - p;
 		else l = strlen(p);
 		strncpy(buf, p, l);
-		buf[l] = DIRSEP_CHAR;
-		strcpy(buf+l+1, name);
+		buf[l+1] = '\0';
+		if (buf[l - 1] != DIRSEP_CHAR) buf[l] = DIRSEP_CHAR;
+		else buf[l] = '\0';
+		strcat(buf, name);
 		if ((f = fopen(buf, mode)))
 		{
 			fclose(f);
